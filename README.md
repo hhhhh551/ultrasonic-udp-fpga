@@ -76,8 +76,26 @@ sim/                                测试台
 build_ultrasonic.tcl                一键综合实现脚本
 design_filters.py                   滤波器设计与定点仿真脚本
 docs/                               系统框图
+host/                               上位机 C# 源码与可执行程序
 ```
 
+## 上位机软件（host/）
+
+C# / .NET 7 / WinForms，分层架构，通信与算法部分不依赖界面控件：
+
+| 层次 | 文件 | 职责 |
+|---|---|---|
+| 通信层 | `UdpSource.cs` / `IUdpSource.cs` | UDP 收发，只负责拿到字节 |
+| 协议层 | `AScanProtocol.cs` | 1030 字节载荷 → 采样数组，校验帧头与点数 |
+| 模型层 | `AScanFrame.cs` | 物理量换算、多回波检测 |
+| 会话层 | `AcquisitionSession.cs` | 统计、丢帧与停滞检测 |
+| 界面层 | `MainForm.cs` / `WaveformPanel.cs` | 波形绘制与交互 |
+
+**多回波识别算法**：求本帧最大值 M 并取门限 T = 0.2M → 扫描全部局部极大值 → 按幅值排序 →
+间距小于 5 mm 合并为同一回波 → 按深度升序输出前 6 个。解决单峰值方案漏判多缺陷的问题。
+
+**运行**：`host/publish/UltrasoundHost.exe`（需 .NET 7 Desktop Runtime），默认监听 UDP 1234 端口。
+界面含包速率、总包数、有效帧、解析失败等统计，纵轴自动量程。
 ## 仿真验证
 
 | 测试台 | 检查项 | 结果 |

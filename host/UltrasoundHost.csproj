@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+
+    <!--
+      net7.0-windows 里的 "-windows" 后缀不能少。
+      它表示"这个程序只能在 Windows 上跑,并且要使用 Windows 专有的界面库(WinForms)"。
+      如果写成纯 net7.0,编译器会认为你要做跨平台程序,不允许引用 WinForms。
+    -->
+    <TargetFramework>net7.0-windows</TargetFramework>
+
+    <!-- Nullable:开启"可空引用类型检查",让编译器帮你发现空引用风险 -->
+    <Nullable>enable</Nullable>
+
+    <!-- ImplicitUsings:自动引入 System、System.Linq 等常用命名空间,少写几行 using -->
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- UseWindowsForms:告诉 SDK 要链接 WinForms 界面库 -->
+    <UseWindowsForms>true</UseWindowsForms>
+
+    <RootNamespace>UltrasoundHost</RootNamespace>
+    <AssemblyName>UltrasoundHost</AssemblyName>
+  </PropertyGroup>
+
+  <!--
+    注意:这里没有 PackageReference。
+    因为 UDP 通信用的 UdpClient 属于 System.Net.Sockets,
+    是 .NET 框架自带的基础库,不需要额外装 NuGet 包。
+
+    对比一下上一个项目:串口 SerialPort 因为在 .NET Core 之后
+    被拆成了独立的 System.IO.Ports 包,所以必须显式引用。
+    判断方法很简单:编译报 CS1069 就是缺包,拿类型名去 NuGet 搜一下就行。
+  -->
+
+</Project>
